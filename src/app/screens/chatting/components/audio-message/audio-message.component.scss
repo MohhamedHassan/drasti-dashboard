@@ -1,0 +1,32 @@
+.recordbtn {
+  background-color: transparent !important;
+  padding: 0 !important;
+  border: none;
+}
+.icnColor {
+  color: #0034c2 !important;
+  font-size: 1.3rem;
+}
+.redcolor {
+  font-size: 1.3rem;
+  color: red;
+}
+.whit {
+  cursor: pointer;
+  background-color: #0034c2;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  i {
+    font-size: 1rem;
+    color: white;
+  }
+}
+.gry {
+  vertical-align: middle;
+  font-size: 2rem;
+  color: rgb(216, 211, 211);
+}

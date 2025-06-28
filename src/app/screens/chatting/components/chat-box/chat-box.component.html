@@ -1,0 +1,156 @@
+<div class="chatbox">
+  <div
+    style="border-bottom: 1px solid #cfcfcf"
+    class="header px-3 py-2 d-flex align-items-center justify-content-between"
+  >
+    <span class="fw-bold">{{ studentName || "دردشة" }} </span>
+  </div>
+  <div #boxchat2 class="body">
+    <ul class="p-2 list-unstyled m-0">
+      <li
+        class="mb-2"
+        [ngStyle]="{
+          'text-align':
+            userid == message?.from_id || message?.from_id == '_1'
+              ? 'left'
+              : 'right'
+        }"
+        *ngFor="let message of messages"
+      >
+        <span
+          style="
+            border-radius: 15px;
+            padding: 10px;
+            display: inline-block;
+            max-width: 80%;
+            word-break: break-all;
+          "
+          [ngStyle]="{
+            background:
+              userid == message?.from_id || message?.from_id == '_1'
+                ? '#0d6efd'
+                : '#e4e6eb',
+            color:
+              userid == message?.from_id || message?.from_id == '_1'
+                ? 'white'
+                : 'black'
+          }"
+          *ngIf="message?.type == 'text'"
+        >
+          {{ message?.message_content }}
+        </span>
+        <div
+          *ngIf="message?.type == 'photo'"
+          style="min-height: 100px"
+          [ngStyle]="{
+            'text-align':
+              userid == message?.from_id || message?.from_id == '_1'
+                ? 'left'
+                : 'right'
+          }"
+        >
+          <img
+            style="
+              max-height: 200px;
+              border: 1px solid #cfcfcf;
+              border-radius: 10px;
+              max-width: 200px;
+            "
+            [src]="message?.message_content"
+            alt="Drasti"
+          />
+        </div>
+        <div
+          [ngStyle]="{
+            'justify-content':
+              userid == message?.from_id || message?.from_id == '_1'
+                ? 'flex-end'
+                : 'flex-start'
+          }"
+          style="display: flex"
+          *ngIf="message?.type == 'audio'"
+        >
+          <audio
+            style="width: 90%"
+            controls
+            controlsList="nodownload noplaybackrate"
+          >
+            <source [src]="message?.message_content" type="audio/mpeg" />
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div
+    style="border-top: 1px solid #cfcfcf"
+    class="footer p-2 d-flex align-items-center justify-content-between"
+  >
+    <ng-container *ngIf="showaudio">
+      <app-audio-message
+        (micError)="micrphonAlert = true"
+        (send)="sendAudio($event)"
+        (nowRecording)="nowRecording = $event"
+      ></app-audio-message>
+    </ng-container>
+    <ng-container *ngIf="!nowRecording">
+      <div style="height: 16px; width: 16px" class="position-relative">
+        <i class="fa-solid fa-image position-absolute"></i>
+        <input
+          (input)="onImageChange($event)"
+          accept="image/*"
+          style="
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            width: 16px;
+            height: 16px;
+            z-index: 1;
+            opacity: 0;
+          "
+          type="file"
+        />
+      </div>
+      <input
+        (keyup.enter)="sendMessage(msgContent)"
+        #msgContent
+        placeholder="Aa"
+        type="text"
+      />
+      <i (click)="sendMessage(msgContent)" class="fa-solid fa-paper-plane"></i>
+    </ng-container>
+  </div>
+</div>
+<div
+  style="display: flex; justify-content: center; align-items: center"
+  *ngIf="micrphonAlert"
+  class="locationPopup"
+>
+  <div
+    style="
+      width: 50%;
+      background-color: white;
+      border-radius: 8px;
+      padding: 16px;
+    "
+  >
+    <h2>السماح للميكروفون</h2>
+    <p>
+      لتسجيل الرسائل الصوتية، يحتاج دراستي إلى الوصول إلى الميكروفون الخاص بك.
+      انقر فوق شريط URL واختر السماح دائمًا بالوصول إلى الميكروفون الخاص بك.
+    </p>
+    <div
+      style="width: 100%; display: flex; justify-content: end; margin-top: 20px"
+    >
+      <button
+        style="background-color: #0034c2; color: white"
+        (click)="micrphonAlert = false"
+        class="gotit"
+      >
+        حسناً
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="d-flex align-items-center justify-content-end w-100">
+  <!-- <audio
+    *ngIf="audioUrl" [src]="audioUrl" controls></audio>
+    <span *ngIf="audioUrl" class="mx-2"></span> -->
+  <button
+    class="recordbtn"
+    (click)="cancelREcord()"
+    *ngIf="recordingStatus != 0"
+  >
+    <i class="fa-solid fa-trash-can icnColor"></i>
+  </button>
+  <span *ngIf="recordingStatus != 0" class="mx-2"></span>
+  <ng-container *ngIf="!hideOptions">
+    <p style="min-width: 100px" *ngIf="recordingStatus != 0" class="m-0">
+      <span style="min-width: 30px; display: inline-block">
+        <span>{{ recordTime }}:{{ recordSeconds | number : "2.0" }}</span>
+      </span>
+    </p>
+    <span *ngIf="recordingStatus != 0" class="mx-2"></span>
+    <button class="recordbtn">
+      <i
+        (click)="startRecording()"
+        *ngIf="recordingStatus == 0"
+        class="fa-solid fa-microphone icnColor"
+      ></i>
+      <i
+        (click)="pauseRecording()"
+        *ngIf="recordingStatus != 0 && !paused"
+        class="fa-regular fa-circle-pause redcolor"
+      ></i>
+      <i
+        (click)="resumeRecording()"
+        *ngIf="recordingStatus != 0 && paused"
+        class="fa-solid fa-microphone redcolor"
+      ></i>
+    </button>
+  </ng-container>
+
+  <div
+    *ngIf="recordingStatus != 0 && recordSeconds > 0"
+    (click)="stopRecording()"
+    class="whit mx-2"
+  >
+    <i class="fa-solid fa-paper-plane"></i>
+  </div>
+</div>

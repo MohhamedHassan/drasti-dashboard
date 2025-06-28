@@ -1,1 +1,390 @@
-/* You can add global styles to this file, and also import other style files */
+/* Importing Bootstrap SCSS file. */
+@import "~bootstrap/scss/bootstrap";
+
+$blueColor: #2b6cb0;
+$blueHover: #215387;
+$navbarBG: #f7fafc;
+$footerBG: #0034c2;
+$cartH2Color: #4b5981;
+$grayColor: #b1b8c9;
+$lightBlue: #1b52d8;
+
+// end variables
+.attach {
+  li {
+    font-weight: bold;
+    color: $grayColor;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 10px;
+    cursor: pointer;
+  }
+  li.active {
+    color: $blueColor;
+    border-bottom: 2px solid $blueColor;
+  }
+}
+
+label {
+  margin-bottom: 5px;
+}
+* {
+  text-align: right;
+  direction: rtl;
+}
+td {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.redstar {
+  color: red;
+}
+header.blueHeader {
+  height: 200px;
+  background-color: #edf2f7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  h1 {
+    font-weight: 500;
+  }
+}
+bdi {
+  color: $cartH2Color;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+del {
+  color: $grayColor;
+  font-size: 16px;
+  font-weight: bold;
+}
+img.stage {
+  border-radius: 25px 25px 25px 25px;
+  box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 50%);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  display: none;
+}
+
+a {
+  color: black !important;
+  text-decoration: none !important;
+
+  &:hover {
+    color: black !important;
+  }
+}
+
+.bluButton {
+  background-color: $blueColor;
+  color: white !important;
+  border-radius: 20px;
+  padding: 10px 15px 13px 15px;
+  border: none;
+  &:hover {
+    background-color: $blueHover;
+    box-shadow: 0px 15px 25px -7px rgb(0 0 0 / 10%);
+    color: white !important;
+  }
+  a {
+    color: white !important;
+  }
+}
+.bluButton[disabled] {
+  background-color: #86a9cd !important;
+}
+// end glopal
+nav {
+  background-color: $navbarBG;
+
+  div.container.flx {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .mainlogo {
+    width: 70px;
+  }
+
+  svg {
+    font-weight: bold;
+  }
+
+  .cartCount {
+    background-color: #edf2f7;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    display: inline-block;
+    text-align: center;
+  }
+}
+
+// end navbar
+.homepage {
+  .homepageHeader {
+    h1,
+    h2 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      color: $blueColor;
+      font-family: "Cairo", Sans-serif;
+      font-size: 59px;
+      font-weight: 500;
+    }
+
+    h2 {
+      color: $blueColor;
+      font-family: "Cairo", Sans-serif;
+      font-size: 26px;
+      font-weight: 300;
+    }
+  }
+
+  video {
+    width: 100%;
+    border: 1px solid;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 767px) {
+  .homepageHeader {
+    h1 {
+      font-size: 34px !important;
+    }
+
+    h2 {
+      font-size: 19px !important;
+    }
+  }
+}
+
+// end home page
+footer {
+  background-color: $footerBG;
+  color: white;
+
+  h2 {
+    color: #ffffff;
+    font-family: "Cairo", Sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  i {
+    color: #fff;
+    transition: 0.5s;
+    font-size: 25px;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  td {
+    padding: 10px 0 10px 30px;
+  }
+}
+
+// end footer
+.login {
+  form {
+    margin: 20px 0;
+    border-radius: 5px;
+  }
+  form.page {
+    border: 1px solid #b7cde1;
+    padding: 30px;
+  }
+  label {
+    font-weight: bold;
+  }
+
+  .submitinput {
+    border-radius: 5px !important;
+  }
+}
+.phonenumberRight {
+  width: 85%;
+}
+
+.phonenumberLeft {
+  width: 15%;
+  text-align: center;
+}
+@media only screen and (max-width: 600px) {
+  .login {
+    form.page {
+      padding: 10px;
+    }
+    .phonenumberRight {
+      width: 75%;
+    }
+
+    .phonenumberLeft {
+      width: 25%;
+    }
+  }
+}
+
+// end login
+.cstmCart {
+  box-shadow: 0 2px 4px rgb(0 0 0 / 8%);
+  border-radius: 8px;
+  transition: bottom 0.5s;
+  position: relative;
+  bottom: 0;
+  &:hover {
+    box-shadow: 0 24px 34px -5px rgb(0 0 0 / 27%);
+    bottom: 5px;
+  }
+  .cartImg {
+    height: 260px;
+    text-align: center;
+    img {
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      height: 100%;
+      width: 100%;
+    }
+  }
+  .cartImg.small {
+    height: 200px;
+  }
+  .cartDetails {
+    h2 {
+      font-family: "Cairo", Sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 30px;
+      min-height: 120px;
+      // white-space: nowrap;
+      // overflow: hidden;
+      // text-overflow: ellipsis;
+
+      a {
+        color: $cartH2Color !important;
+        transition: 0.5s;
+        &:hover {
+          color: $lightBlue !important;
+        }
+      }
+    }
+    button {
+      background-color: transparent;
+      border: none;
+      color: $blueHover;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  }
+}
+@media only screen and (max-width: 600px) {
+  .cstmCart {
+    .cartImg {
+      height: 150px;
+    }
+    .cartDetails {
+      h2 {
+        font-size: small;
+      }
+      button {
+        font-size: small;
+      }
+    }
+  }
+}
+// end cart
+.class-details {
+  background-color: #f7f7f7;
+  .category {
+    small:first-of-type {
+      color: $grayColor;
+    }
+    small {
+      font-weight: bold;
+    }
+  }
+  h3 {
+    font-size: 20px;
+  }
+}
+// end class details
+.conditions {
+  background-color: #f7f7f7;
+}
+// end condiations
+.lds-ring {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border: 8px solid $blueColor;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: $blueColor transparent transparent transparent;
+}
+
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// end css loading
+
+.attachLinks {
+  display: block;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #f4f7f8;
+  margin-bottom: 10px;
+  color: #4b5981 !important;
+  border: 1px solid #e8eff1;
+}
+
+@media only screen and (max-width: 600px) {
+  nav {
+    .bluButton.login {
+      padding: 8px !important;
+      font-size: small;
+    }
+  }
+}
+
+@import "ngx-toastr/toastr";

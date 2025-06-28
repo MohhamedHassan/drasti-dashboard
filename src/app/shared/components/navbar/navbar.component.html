@@ -1,0 +1,33 @@
+<nav>
+  <div
+    style="direction: ltr; text-align: left"
+    class="container mt-2 d-md-none"
+  ></div>
+  <div class="container flx">
+    <div class="logoParent">
+      <a routerLink="/" aria-label="دراستي">
+        <img class="mainlogo" src="assets/logo.png" alt="دراستي" />
+      </a>
+    </div>
+    <!-- end logo   -->
+    <div
+      class="loginParent"
+      style="display: flex; gap: 10px; align-items: center"
+    >
+      <a routerLink="/">موادي</a>
+      <span class="mx-2"></span>
+      <a routerLink="/all-msgs">الاسئلة</a>
+      <span class="mx-2"></span>
+      <button
+        [disabled]="authService.logoutloading"
+        style="cursor: pointer"
+        aria-label="تسجيل الخروج"
+        (click)="authService.logout()"
+        class="bluButton logout"
+      >
+        تسجيل الخروج
+      </button>
+    </div>
+    <!-- end login parent -->
+  </div>
+</nav>

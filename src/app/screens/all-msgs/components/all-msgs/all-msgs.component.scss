@@ -1,0 +1,22 @@
+.material-block {
+  margin-bottom: 20px;
+  // border-bottom: 1px solid #ddd;
+}
+
+.student-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  width: 100%;
+  gap: 16px;
+  // color: #2b6cb0;
+}
+
+.unread-dot {
+  background-color: #2b6cb0;
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}

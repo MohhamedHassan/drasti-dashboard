@@ -1,0 +1,109 @@
+<!-- <section class="container">
+  <h1 style="text-align: center; color: #0034c2; margin-bottom: 20px">
+    جميع الاسئلة
+  </h1>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <ng-container *ngFor="let material of materials">
+        <div
+          *ngIf="
+            studentsPerMaterial[material?.material?.id]?.length &&
+            checkUnread(studentsPerMaterial[material?.material?.id])
+          "
+          class="material-block"
+        >
+          <h3
+        style="
+          background: #2b6cb0;
+          color: white;
+          padding: 10px;
+          border-radius: 10px;
+        "
+      >
+        {{ material?.material.name }}
+      </h3>
+          <ng-container
+            *ngIf="studentsPerMaterial[material?.material?.id]?.length"
+          >
+            <div>
+              <div
+                *ngFor="
+                  let student of studentsPerMaterial[material?.material?.id]
+                "
+              >
+                <div
+                  style="
+                    border-radius: 10px;
+                    padding: 10px;
+                    margin-bottom: 10px;
+                    cursor: pointer;
+                    border: 1px solid rgb(245 236 236);
+                  "
+                  *ngIf="student.hasUnread"
+                  [queryParams]="{
+                    studentId: student.userId,
+                    studentName: student.name
+                  }"
+                  [routerLink]="
+                    '/material-chat/' +
+                    material?.material?.id +
+                    '/' +
+                    material?.material?.name
+                  "
+                  class="student-item"
+                >
+                  <span>- {{ student.name }}</span>
+                  <span *ngIf="student.hasUnread" class="unread-dot">●</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noStudents>
+            <h5>لا يوجد اسئلة</h5>
+          </ng-template>
+        </div></ng-container
+      >
+    </div>
+  </div>
+
+  <h4
+    *ngIf="!materials?.length || noMsgs"
+    style="font-weight: bold; text-align: center"
+  >
+    لا توجد اسئلة
+  </h4>
+</section>
+<app-loading *ngIf="loading"></app-loading> -->
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div
+        [queryParams]="{
+          studentId: student.userId,
+          studentName: student.userName
+        }"
+        [routerLink]="
+          '/material-chat/' + student?.materialId + '/' + student?.materialName
+        "
+        style="
+          border-radius: 10px;
+          padding: 10px;
+          margin-bottom: 10px;
+          cursor: pointer;
+          border: 1px solid rgb(245 236 236);
+        "
+        *ngFor="let student of studentsList"
+        class="student-item"
+      >
+        <div>
+          <h4 style="margin: 0">{{ student.materialName }}</h4>
+          <h6 style="margin: 5px 0">{{ student.userName }}</h6>
+          <p style="margin: 0; color: gray">
+            <small>{{ student.lastMessageDate }}</small>
+          </p>
+        </div>
+        <span *ngIf="student.hasUnread" class="unread-dot"></span>
+      </div>
+    </div>
+  </div>
+</div>

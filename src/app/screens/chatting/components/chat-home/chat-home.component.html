@@ -1,0 +1,62 @@
+<section class="container chat-home mt-3">
+  <h1 style="text-align: center; color: #0034c2; margin-bottom: 20px">
+    اسئلة مادة {{ materialName }}
+  </h1>
+  <div class="row">
+    <div class="col-lg-4">
+      <div class="chat-list">
+        <h3 style="padding: 16px">الطلاب</h3>
+        <h5 class="text-center" *ngIf="loading">Loading....</h5>
+        <ul *ngIf="students?.length">
+          <li
+            style="
+              border-bottom: 1px solid #d8cfcf;
+              padding: 16px;
+              cursor: pointer;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              font-weight: bold;
+            "
+            class="mb-2 chat-list-item"
+            *ngFor="let student of students"
+            (click)="selectStudent(student.userId, student.name)"
+            [style.color]="
+              student.userId === selectedStudentId ? '#0034c2' : 'black'
+            "
+          >
+            - {{ student.name }}
+            <span
+              *ngIf="student.hasUnread && selectedStudentId != student.userId"
+              style="
+                display: block;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background-color: #0034c2;
+              "
+              title="رسائل غير مقروءة"
+            >
+            </span>
+          </li>
+        </ul>
+        <h3 class="text-center" *ngIf="!students?.length && !loading">
+          لا يوجد اسئلة
+        </h3>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div *ngIf="messages?.length; else selectChat">
+        <app-chat-box
+          [studentName]="studentName"
+          [messages]="messages"
+        ></app-chat-box>
+      </div>
+      <ng-template #selectChat>
+        <h3 *ngIf="students?.length" class="text-center p-5">
+          قم بأختيار المحادثة
+        </h3>
+      </ng-template>
+    </div>
+  </div>
+</section>
