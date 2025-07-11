@@ -47,6 +47,10 @@ export class ChatService {
             sorted.find(
               (msg) => msg.from_id !== teacherId && msg.from_id !== '_1'
             )?.from || 'طالب',
+          phone:
+            sorted.find(
+              (msg) => msg.from_id !== teacherId && msg.from_id !== '_1'
+            )?.from_number || '',
           hasUnread,
           lastDate: lastMessage.date,
         });
@@ -191,4 +195,5 @@ export interface StudentChatItem {
   name: string;
   hasUnread: boolean;
   lastDate: string;
+  phone: any;
 }

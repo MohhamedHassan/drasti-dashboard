@@ -10,4 +10,7 @@ export class NavbarComponent implements OnInit {
   constructor(public authService: AuthService) {}
 
   ngOnInit(): void {}
+  isLogin() {
+    return !!localStorage.getItem('drastitoken');
+  }
 }

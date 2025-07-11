@@ -28,7 +28,7 @@
           [ngStyle]="{
             background:
               userid == message?.from_id || message?.from_id == '_1'
-                ? '#0d6efd'
+                ? '#920f11'
                 : '#e4e6eb',
             color:
               userid == message?.from_id || message?.from_id == '_1'
@@ -40,8 +40,9 @@
           {{ message?.message_content }}
         </span>
         <div
+          (click)="currentImage = message?.message_content"
           *ngIf="message?.type == 'photo'"
-          style="min-height: 100px"
+          style="min-height: 100px; cursor: pointer"
           [ngStyle]="{
             'text-align':
               userid == message?.from_id || message?.from_id == '_1'
@@ -78,6 +79,18 @@
             <source [src]="message?.message_content" type="audio/mpeg" />
             Your browser does not support the audio element.
           </audio>
+        </div>
+      </li>
+      <li *ngIf="imageLoading">
+        <div
+          style="display: flex; justify-content: center; align-items: center"
+        >
+          <div class="lds-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </div>
       </li>
     </ul>
@@ -138,19 +151,75 @@
   >
     <h2>السماح للميكروفون</h2>
     <p>
-      لتسجيل الرسائل الصوتية، يحتاج دراستي إلى الوصول إلى الميكروفون الخاص بك.
-      انقر فوق شريط URL واختر السماح دائمًا بالوصول إلى الميكروفون الخاص بك.
+      لتسجيل الرسائل الصوتية، نحتاج إلى الوصول إلى الميكروفون الخاص بك. انقر فوق
+      شريط URL واختر السماح دائمًا بالوصول إلى الميكروفون الخاص بك.
     </p>
     <div
       style="width: 100%; display: flex; justify-content: end; margin-top: 20px"
     >
       <button
-        style="background-color: #0034c2; color: white"
+        style="background-color: #920f11; color: white"
         (click)="micrphonAlert = false"
         class="gotit"
       >
         حسناً
       </button>
     </div>
+  </div>
+</div>
+<div
+  *ngIf="currentImage"
+  style="
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  "
+>
+  <div style="position: relative">
+    <div
+      style="
+        top: 10px;
+        right: 10px;
+        position: absolute;
+        display: flex;
+        gap: 10px;
+      "
+    >
+      <i
+        style="
+          background-color: #920f11;
+          padding: 10px;
+          border-radius: 10px;
+          cursor: pointer;
+          color: white;
+        "
+        (click)="currentImage = ''"
+        class="fa-solid fa-x"
+      ></i>
+      <i
+        class="fa-solid fa-download text-white"
+        style="
+          background-color: #920f11;
+          padding: 10px;
+          border-radius: 10px;
+          cursor: pointer;
+          color: white;
+        "
+        (click)="downloadImage()"
+      >
+      </i>
+    </div>
+    <img
+      style="max-width: 100%; max-height: 100vh"
+      [src]="currentImage"
+      alt=""
+    />
   </div>
 </div>

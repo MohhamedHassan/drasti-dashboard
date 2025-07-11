@@ -25,12 +25,14 @@ export class AudioMessageComponent {
   recordingStatus = 0;
   hideOptions = false;
   recordTime = 0;
+  time = 0;
   recordSeconds: number = 0;
   interval: any;
   @Input() cancel = false;
   constructor(private cdr: ChangeDetectorRef) {}
   startRecording() {
     this.recordingStatus = 1;
+    this.time = 0;
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
@@ -41,6 +43,7 @@ export class AudioMessageComponent {
         this.recording = true;
 
         this.interval = setInterval(() => {
+          this.time += 1;
           if (this.recordSeconds == 60) {
             this.recordSeconds = 0;
             this.recordTime += 1;
@@ -60,7 +63,7 @@ export class AudioMessageComponent {
               type: 'audio/webm',
             });
             this.audioChunks = [];
-            this.send.emit(audioBlob);
+            this.send.emit({ audio: audioBlob, duration: this.time });
             this.audioChunks = [];
           }
           this.stopMediaStream();
@@ -84,6 +87,7 @@ export class AudioMessageComponent {
   resumeRecording() {
     if (this.mediaRecorder && this.mediaRecorder.state === 'paused') {
       this.interval = setInterval(() => {
+        this.time += 1;
         if (this.recordSeconds == 60) {
           this.recordSeconds = 0;
           this.recordTime += 1;

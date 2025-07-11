@@ -1,10 +1,10 @@
 /* Importing Bootstrap SCSS file. */
 @import "~bootstrap/scss/bootstrap";
 
-$blueColor: #2b6cb0;
-$blueHover: #215387;
+$blueColor: #920f11;
+$blueHover: #a54e4f;
 $navbarBG: #f7fafc;
-$footerBG: #0034c2;
+$footerBG: #920f11;
 $cartH2Color: #4b5981;
 $grayColor: #b1b8c9;
 $lightBlue: #1b52d8;
@@ -94,7 +94,7 @@ a {
   }
 }
 .bluButton[disabled] {
-  background-color: #86a9cd !important;
+  background-color: $blueHover !important;
 }
 // end glopal
 nav {
@@ -287,6 +287,16 @@ footer {
       font-weight: bold;
       font-size: 18px;
     }
+  }
+  .badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #920f11;
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+    padding: 10px;
   }
 }
 @media only screen and (max-width: 600px) {

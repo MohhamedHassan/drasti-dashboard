@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   OnChanges,
   OnDestroy,
@@ -25,6 +26,8 @@ import { HttpService } from '../../services/http.service';
   styleUrls: ['./chat-box.component.scss'],
 })
 export class ChatBoxComponent implements OnInit, OnChanges {
+  imageLoading = false;
+  currentImage = '';
   @ViewChild('boxchat2') boxchat!: ElementRef;
   micrphonAlert = false;
   nowRecording = false;
@@ -68,6 +71,8 @@ export class ChatBoxComponent implements OnInit, OnChanges {
           'yyyy-MM-dd HH:mm:ss'
         )}`
     );
+    this.imageLoading = true;
+    this.scrollChatBox();
     reference.put(img).then(() => {
       reference.getDownloadURL().subscribe((imageurl) => {
         let date = new Date();
@@ -98,12 +103,13 @@ export class ChatBoxComponent implements OnInit, OnChanges {
               student_id: this.studentDetails.studentId,
             })
             .subscribe();
+          this.imageLoading = false;
         });
         this.scrollChatBox();
       });
     });
   }
-  sendAudio(audio: any) {
+  sendAudio(event: { audio: any; duration: any }) {
     this.nowRecording = false;
     let reference = this.angularFireStore.ref(
       'message_images/' +
@@ -112,7 +118,7 @@ export class ChatBoxComponent implements OnInit, OnChanges {
           'yyyy-MM-dd HH:mm:ss'
         )}`
     );
-    reference.put(audio).then(() => {
+    reference.put(event.audio).then(() => {
       reference.getDownloadURL().subscribe((audioUrl) => {
         console.log(audioUrl);
         let date = new Date();
@@ -126,6 +132,7 @@ export class ChatBoxComponent implements OnInit, OnChanges {
           {
             date: this.datepipe.transform(date, 'yyyy-MM-dd HH:mm:ss'),
             did_read: false,
+            duration: `${event.duration}`,
             from: localStorage.getItem('username'),
             from_number: localStorage.getItem('userphone'),
             from_id: localStorage.getItem('userid'),
@@ -162,7 +169,7 @@ export class ChatBoxComponent implements OnInit, OnChanges {
     const app = initializeApp(firebaseConfig);
     this.db = getDatabase(app);
     window.scroll(0, 0);
-    this.title.setTitle(` دراستي - ادرس وانت متطمن `);
+    this.title.setTitle(`NAMNAM`);
 
     this.messages = this.messages.sort(function (a: any, b: any) {
       let left: any = new Date(a.date);
@@ -226,5 +233,22 @@ export class ChatBoxComponent implements OnInit, OnChanges {
   }
   get userid() {
     return localStorage.getItem('userid');
+  }
+  downloadImage() {
+    fetch(this.currentImage)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'downloaded-image.' + 'png';
+        a.click();
+        URL.revokeObjectURL(url);
+      })
+      .catch((err) => console.error('Download failed:', err));
+  }
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscape(event: KeyboardEvent) {
+    this.currentImage = '';
   }
 }

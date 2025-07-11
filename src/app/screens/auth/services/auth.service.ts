@@ -20,7 +20,7 @@ export class AuthService {
       localStorage.removeItem('drastitoken');
       localStorage.removeItem('userid');
       localStorage.removeItem('username');
-      this.router.navigate(['/']);
+      this.router.navigate(['/auth/login']);
       this.logoutloading = false;
     });
   }

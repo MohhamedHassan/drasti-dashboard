@@ -10,6 +10,6 @@ export class NotfoundComponent implements OnInit {
   constructor(private title: Title) {}
 
   ngOnInit(): void {
-    this.title.setTitle('الصفحة غير موجودة - دراستي');
+    this.title.setTitle('الصفحة غير موجودة - NAMNAM');
   }
 }

@@ -16,7 +16,7 @@
         >
           <div class="cstmCart">
             <div class="cartImg">
-              <img [src]="item?.material?.media" alt="دراستي" />
+              <img [src]="item?.material?.media" alt="NAMNAM" />
             </div>
             <div class="cartDetails">
               <h2 class="p-3">
@@ -24,6 +24,13 @@
                   {{ item?.material?.name }}
                 </a>
               </h2>
+            </div>
+            <div *ngIf="item?.material?.badge" class="badge">
+              <p style="margin: 0">
+                لديك
+                {{ item?.material?.badge }}
+                اسئلة جديدة
+              </p>
             </div>
           </div>
         </a>

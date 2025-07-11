@@ -5,12 +5,17 @@
   ></div>
   <div class="container flx">
     <div class="logoParent">
-      <a routerLink="/" aria-label="دراستي">
-        <img class="mainlogo" src="assets/logo.png" alt="دراستي" />
+      <a routerLink="/" aria-label="NAMNAM">
+        <img
+          class="mainlogo"
+          src="assets/0838de4f-5271-4e88-99d9-c0f89edfe1c2.jfif"
+          alt="NAMNAM"
+        />
       </a>
     </div>
     <!-- end logo   -->
     <div
+      *ngIf="isLogin()"
       class="loginParent"
       style="display: flex; gap: 10px; align-items: center"
     >
