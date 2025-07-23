@@ -188,7 +188,9 @@ export class ChatBoxComponent implements OnInit, OnChanges {
     });
     let user = this.messages.find(
       (item) =>
-        item.from_id != localStorage.getItem('userid') && item.from_id != '_1'
+        item.from_id != localStorage.getItem('userid') &&
+        item.from_id != '_1' &&
+        !item.from_display_name
     );
     this.studentDetails = {
       studentName: user.from,
