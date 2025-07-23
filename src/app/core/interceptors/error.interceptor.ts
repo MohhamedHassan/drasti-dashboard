@@ -29,9 +29,10 @@ export class ErrorInterceptor implements HttpInterceptor {
           this.toastr.error(errorMessages?.message);
         }
         if ([401, 403].indexOf(err.status) !== -1) {
-          localStorage.removeItem('drastitoken');
-          localStorage.removeItem('userid');
-          localStorage.removeItem('username');
+          // localStorage.removeItem('namnamToken');
+          // localStorage.removeItem('userid');
+          // localStorage.removeItem('username');
+          localStorage.clear();
           // this.router.navigate(['/'])
         }
         return throwError(err);

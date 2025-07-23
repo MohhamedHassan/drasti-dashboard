@@ -21,7 +21,7 @@ export class UserGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (!!localStorage.getItem('drastitoken')) {
+    if (!!localStorage.getItem('namnamToken')) {
       this.router.navigate(['/']);
       return false;
     }

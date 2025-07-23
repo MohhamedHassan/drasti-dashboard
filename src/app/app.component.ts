@@ -26,27 +26,27 @@ export class AppComponent {
       measurementId: 'G-41JEDDFQT2',
     });
     this.db = getDatabase(this.app);
-    if (!!localStorage.getItem('drastitoken')) {
-      set(ref(this.db, `Auth/${localStorage.getItem('userid')}`), {
-        user_token: localStorage.getItem('drastitoken'),
-      });
-    }
-    const authRef = ref(this.db, 'Auth');
-    onValue(authRef, (snapshot: any) => {
-      if (!!localStorage.getItem('drastitoken')) {
-        const data = snapshot.val();
-        for (let i in data) {
-          if (i == localStorage.getItem('userid')) this.savedToken = data[i];
-        }
-        if (
-          this.savedToken?.user_token != localStorage.getItem('drastitoken')
-        ) {
-          localStorage.removeItem('drastitoken');
-          localStorage.removeItem('userid');
-          localStorage.removeItem('username');
-          this.router.navigate(['/']);
-        }
-      }
-    });
+    // if (!!localStorage.getItem('namnamToken')) {
+    //   set(ref(this.db, `Auth/${localStorage.getItem('userid')}`), {
+    //     user_token: localStorage.getItem('namnamToken'),
+    //   });
+    // }
+    // const authRef = ref(this.db, 'Auth');
+    // onValue(authRef, (snapshot: any) => {
+    //   if (!!localStorage.getItem('namnamToken')) {
+    //     const data = snapshot.val();
+    //     for (let i in data) {
+    //       if (i == localStorage.getItem('userid')) this.savedToken = data[i];
+    //     }
+    //     if (
+    //       this.savedToken?.user_token != localStorage.getItem('namnamToken')
+    //     ) {
+    //       localStorage.removeItem('namnamToken');
+    //       localStorage.removeItem('userid');
+    //       localStorage.removeItem('username');
+    //       this.router.navigate(['/']);
+    //     }
+    //   }
+    // });
   }
 }

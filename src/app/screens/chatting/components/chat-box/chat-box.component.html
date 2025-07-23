@@ -11,7 +11,9 @@
         class="mb-2"
         [ngStyle]="{
           'text-align':
-            userid == message?.from_id || message?.from_id == '_1'
+            userid == message?.from_id ||
+            message?.from_id == '_1' ||
+            message.from_display_name
               ? 'left'
               : 'right'
         }"
@@ -27,11 +29,15 @@
           "
           [ngStyle]="{
             background:
-              userid == message?.from_id || message?.from_id == '_1'
+              userid == message?.from_id ||
+              message?.from_id == '_1' ||
+              message.from_display_name
                 ? '#920f11'
                 : '#e4e6eb',
             color:
-              userid == message?.from_id || message?.from_id == '_1'
+              userid == message?.from_id ||
+              message?.from_id == '_1' ||
+              message.from_display_name
                 ? 'white'
                 : 'black'
           }"
@@ -45,7 +51,9 @@
           style="min-height: 100px; cursor: pointer"
           [ngStyle]="{
             'text-align':
-              userid == message?.from_id || message?.from_id == '_1'
+              userid == message?.from_id ||
+              message?.from_id == '_1' ||
+              message.from_display_name
                 ? 'left'
                 : 'right'
           }"
@@ -64,7 +72,9 @@
         <div
           [ngStyle]="{
             'justify-content':
-              userid == message?.from_id || message?.from_id == '_1'
+              userid == message?.from_id ||
+              message?.from_id == '_1' ||
+              message.from_display_name
                 ? 'flex-end'
                 : 'flex-start'
           }"
@@ -81,7 +91,11 @@
           </audio>
         </div>
         <p
-          *ngIf="userid != message?.from_id && message?.from_id != '_1'"
+          *ngIf="
+            userid != message?.from_id &&
+            message?.from_id != '_1' &&
+            !message.from_display_name
+          "
           style="
             justify-content: flex-start;
             display: flex;

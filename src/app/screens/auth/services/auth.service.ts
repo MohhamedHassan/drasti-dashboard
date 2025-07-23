@@ -17,9 +17,10 @@ export class AuthService {
     this.logoutloading = true;
 
     this.http.post(`${environment.apiUrl}logout`, {}).subscribe((res) => {
-      localStorage.removeItem('drastitoken');
-      localStorage.removeItem('userid');
-      localStorage.removeItem('username');
+      // localStorage.removeItem('namnamToken');
+      // localStorage.removeItem('userid');
+      // localStorage.removeItem('username');
+      localStorage.clear();
       this.router.navigate(['/auth/login']);
       this.logoutloading = false;
     });

@@ -21,7 +21,7 @@ export class NotUserGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (!!localStorage.getItem('drastitoken')) {
+    if (!!localStorage.getItem('namnamToken')) {
       return true;
     } else {
       this.router.navigate(['/auth/login']);

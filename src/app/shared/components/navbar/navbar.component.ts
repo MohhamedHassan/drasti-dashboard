@@ -11,6 +11,6 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {}
   isLogin() {
-    return !!localStorage.getItem('drastitoken');
+    return !!localStorage.getItem('namnamToken');
   }
 }

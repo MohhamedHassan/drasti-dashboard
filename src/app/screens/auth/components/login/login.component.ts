@@ -64,7 +64,7 @@ export class LoginComponent implements OnInit {
       this.loginloading = true;
       this.authservice.login(value).subscribe(
         (res: any) => {
-          localStorage.setItem('drastitoken', res?.meta?.token);
+          localStorage.setItem('namnamToken', res?.meta?.token);
           localStorage.setItem('userid', res?.data?.id);
           localStorage.setItem(
             'username',
