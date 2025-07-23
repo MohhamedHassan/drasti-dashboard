@@ -11,6 +11,7 @@ import {
   Output,
   SimpleChanges,
   ViewChild,
+  LOCALE_ID,
 } from '@angular/core';
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { Database, getDatabase, ref, set, onValue } from 'firebase/database';
@@ -20,10 +21,17 @@ import { DatePipe } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ChatService } from '../../services/chat.service';
 import { HttpService } from '../../services/http.service';
+import localeAr from '@angular/common/locales/ar';
+import { registerLocaleData } from '@angular/common';
+
+registerLocaleData(localeAr); // تسجيل اللغة
 @Component({
   selector: 'app-chat-box',
   templateUrl: './chat-box.component.html',
   styleUrls: ['./chat-box.component.scss'],
+  providers: [
+    { provide: LOCALE_ID, useValue: 'ar' }, // تحديد اللغة الافتراضية
+  ],
 })
 export class ChatBoxComponent implements OnInit, OnChanges {
   imageLoading = false;
@@ -87,6 +95,7 @@ export class ChatBoxComponent implements OnInit, OnChanges {
             date: this.datepipe.transform(date, 'yyyy-MM-dd HH:mm:ss'),
             did_read: false,
             from: localStorage.getItem('username'),
+            from_display_name: localStorage.getItem('name_in_web'),
             from_number: localStorage.getItem('userphone'),
             from_id: localStorage.getItem('userid'),
             message_content: imageurl,
@@ -134,6 +143,7 @@ export class ChatBoxComponent implements OnInit, OnChanges {
             did_read: false,
             duration: `${event.duration}`,
             from: localStorage.getItem('username'),
+            from_display_name: localStorage.getItem('name_in_web'),
             from_number: localStorage.getItem('userphone'),
             from_id: localStorage.getItem('userid'),
             message_content: audioUrl,
@@ -210,6 +220,7 @@ export class ChatBoxComponent implements OnInit, OnChanges {
           did_read: false,
           date: this.datepipe.transform(date, 'yyyy-MM-dd HH:mm:ss'),
           from: localStorage.getItem('username'),
+          from_display_name: localStorage.getItem('name_in_web'),
           from_number: localStorage.getItem('userphone'),
           from_id: localStorage.getItem('userid'),
           message_content: inputValue,

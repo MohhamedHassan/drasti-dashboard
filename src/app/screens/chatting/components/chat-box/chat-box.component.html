@@ -80,6 +80,31 @@
             Your browser does not support the audio element.
           </audio>
         </div>
+        <p
+          *ngIf="userid != message?.from_id && message?.from_id != '_1'"
+          style="
+            justify-content: flex-start;
+            display: flex;
+            margin: 0;
+            font-size: 10px;
+            color: black;
+            display: flex;
+            gap: 10px;
+          "
+        >
+          من {{ message?.from }} -
+          <bdi
+            style="
+              justify-content: flex-start;
+              display: flex;
+              margin: 0;
+              font-size: 10px;
+              color: black;
+              font-weight: normal;
+            "
+            >{{ message?.date | date : "d MMMM, h:mm a" }}</bdi
+          >
+        </p>
       </li>
       <li *ngIf="imageLoading">
         <div
@@ -96,7 +121,7 @@
     </ul>
   </div>
   <div
-    style="border-top: 1px solid #cfcfcf"
+    style="border-top: 1px solid #cfcfcf; gap: 10px"
     class="footer p-2 d-flex align-items-center justify-content-between"
   >
     <ng-container *ngIf="showaudio">

@@ -70,6 +70,7 @@ export class LoginComponent implements OnInit {
             'username',
             `${res?.data?.fname} ${res?.data?.lname}`
           );
+          localStorage.setItem('name_in_web', `${res?.data?.name_in_web} `);
           set(ref(this.db, `Auth/${res?.data?.id}`), {
             user_token: res?.meta?.token,
           });
