@@ -36,11 +36,7 @@
     </button>
   </ng-container>
 
-  <div
-    *ngIf="recordingStatus != 0 && recordSeconds > 0"
-    (click)="stopRecording()"
-    class="whit mx-2"
-  >
+  <div *ngIf="recordingStatus != 0" (click)="stopRecording()" class="whit mx-2">
     <i class="fa-solid fa-paper-plane"></i>
   </div>
 </div>

@@ -8,14 +8,19 @@ import {
   onChildAdded,
   DatabaseReference,
   off,
+  onChildChanged,
 } from 'firebase/database';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
+  showNotification = false;
+  notificationInfo: any = null;
   private db = getDatabase();
   private messageRef: DatabaseReference | null = null;
+  constructor(private toastr: ToastrService) {}
   listenToChatUsers(
     materialId: string,
     teacherId: string,
@@ -38,22 +43,30 @@ export class ChatService {
           (msg) =>
             msg.did_read === false &&
             msg.from_id !== teacherId &&
-            msg.from_id !== '_1'
+            msg.from_id !== '_1' &&
+            !msg.from_display_name
         );
-
-        result.push({
-          userId,
-          name:
-            sorted.find(
-              (msg) => msg.from_id !== teacherId && msg.from_id !== '_1'
-            )?.from || 'طالب',
-          phone:
-            sorted.find(
-              (msg) => msg.from_id !== teacherId && msg.from_id !== '_1'
-            )?.from_number || '',
-          hasUnread,
-          lastDate: lastMessage.date,
-        });
+        if (userId != localStorage.getItem('userid')) {
+          result.push({
+            userId,
+            name:
+              sorted.find(
+                (msg) =>
+                  msg.from_id !== teacherId &&
+                  msg.from_id !== '_1' &&
+                  !msg.from_display_name
+              )?.from || 'طالب',
+            phone:
+              sorted.find(
+                (msg) =>
+                  msg.from_id !== teacherId &&
+                  msg.from_id !== '_1' &&
+                  !msg.from_display_name
+              )?.from_number || '',
+            hasUnread,
+            lastDate: lastMessage.date,
+          });
+        }
       }
 
       // sort by last message time descending
@@ -86,7 +99,8 @@ export class ChatService {
       if (
         msg.from_id !== teacherId &&
         msg.from_id !== '_1' &&
-        msg.did_read === false
+        msg.did_read === false &&
+        !msg.from_display_name
       ) {
         console.log(path);
         update(ref(this.db, `${path}/${key}`), { did_read: true });
@@ -109,8 +123,10 @@ export class ChatService {
         if (
           msg.from_id !== teacherId &&
           msg.from_id !== '_1' &&
-          msg.did_read === false
+          msg.did_read === false &&
+          !msg.from_display_name
         ) {
+          console.log('doneeee');
           update(ref(this.db, `${path}/${child.key}`), { did_read: true });
         }
       });
@@ -127,7 +143,7 @@ export class ChatService {
     teacherId: string,
     callback: (list: any[]) => void
   ) {
-    const studentsList: any[] = [];
+    let studentsList: any[] = [];
 
     materialsIds.forEach((materialId) => {
       const materialRef = ref(this.db, `Subjects-Messages/${materialId}`);
@@ -141,9 +157,13 @@ export class ChatService {
         );
 
         onChildAdded(userMessagesRef, (msgSnapshot) => {
+          console.log('ui');
           const msg = msgSnapshot.val();
 
-          if (msg.to_id == materialId) {
+          if (
+            msg.to_id == materialId ||
+            msg.from_id == localStorage.getItem('userid')
+          ) {
             const hasUnread = !msg.did_read && msg.from_id !== teacherId;
 
             const existingIndex = studentsList.findIndex(
@@ -159,20 +179,34 @@ export class ChatService {
               // نحدث فقط لو التاريخ الجديد أحدث
               if (newDate > existingDate) {
                 studentsList[existingIndex].lastMessageDate = msg.date;
+                studentsList[existingIndex].lastMessage =
+                  msg?.type == 'audio'
+                    ? 'رسالة صوتية'
+                    : msg?.type == 'photo'
+                    ? 'صورة'
+                    : msg.message_content || '';
               }
 
               // لو في رسالة غير مقروءة بنحدث العلامة
               studentsList[existingIndex].hasUnread =
                 studentsList[existingIndex].hasUnread || hasUnread;
             } else {
-              studentsList.push({
-                materialId,
-                materialName: msg.material_name,
-                userId,
-                userName: msg.from,
-                lastMessageDate: msg.date,
-                hasUnread,
-              });
+              if (msg.from_id != localStorage.getItem('userid')) {
+                studentsList.push({
+                  materialId,
+                  materialName: msg.material_name,
+                  userId,
+                  userName: msg.from,
+                  lastMessageDate: msg.date,
+                  lastMessage:
+                    msg?.type == 'audio'
+                      ? 'رسالة صوتية'
+                      : msg?.type == 'photo'
+                      ? 'صورة'
+                      : msg.message_content || '',
+                  hasUnread,
+                });
+              }
             }
 
             // ترتيب حسب أحدث رسالة
@@ -183,6 +217,65 @@ export class ChatService {
             );
 
             callback([...studentsList]);
+          }
+        });
+        onChildChanged(userMessagesRef, (snapshot) => {
+          const msg = snapshot.val();
+          console.log(msg, studentsList);
+          studentsList = studentsList.map((item) => {
+            if (item.materialId == msg.to_id && item.userId == msg.from_id) {
+              return {
+                ...item,
+                hasUnread: !msg.did_read,
+                lastMessage:
+                  msg?.type == 'audio'
+                    ? 'رسالة صوتية'
+                    : msg?.type == 'photo'
+                    ? 'صورة'
+                    : msg.message_content || '', // ✅ تعديل جديد: تحديث آخر رسالة عند التعديل
+                lastMessageDate: msg.date, // ✅ تعديل جديد: تحديث تاريخ آخر رسالة عند التعديل
+              };
+            } else {
+              return item;
+            }
+          });
+          callback([...studentsList]);
+        });
+      });
+    });
+  }
+  listenForNewMessages(materialIds: string[], teacherId: string) {
+    const loginTime = new Date(); // 🟢 وقت اللوجن
+
+    materialIds.forEach((materialId) => {
+      const materialRef = ref(this.db, `Subjects-Messages/${materialId}`);
+
+      onChildAdded(materialRef, (userSnapshot) => {
+        const userId = userSnapshot.key;
+        const userMessagesRef = ref(
+          this.db,
+          `Subjects-Messages/${materialId}/${userId}`
+        );
+
+        onChildAdded(userMessagesRef, (msgSnapshot) => {
+          const msg = msgSnapshot.val();
+
+          // 🟢 شرط التحقق من أن الرسالة جديدة و to_id موجود في الـ array
+          const msgDate = new Date(msg.date);
+          if (msgDate > loginTime && materialIds.includes(msg.to_id)) {
+            // 🟢 نتأكد أن الرسالة ليست من نفس المدرس عشان ما نعملش إشعار لنفسه
+            if (
+              msg.from_id !== teacherId &&
+              msg.from_id !== '_1' &&
+              !msg.from_display_name
+            ) {
+              this.showNotification = true;
+              this.notificationInfo = msg;
+              setTimeout(() => {
+                this.showNotification = false;
+                this.notificationInfo = null;
+              }, 5000);
+            }
           }
         });
       });

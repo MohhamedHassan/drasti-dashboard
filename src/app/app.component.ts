@@ -1,7 +1,20 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { Database, getDatabase, ref, set, onValue } from 'firebase/database';
+import {
+  Database,
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  query,
+  limitToLast,
+  onChildAdded,
+} from 'firebase/database';
+import { AngularFireDatabase } from '@angular/fire/compat/database';
+import { HomeService } from './screens/home/services/home.service';
+import { map } from 'rxjs';
+import { ChatService } from './screens/chatting/services/chat.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,8 +24,13 @@ export class AppComponent {
   app!: FirebaseApp;
   db!: Database;
   savedToken: any;
-
-  constructor(private router: Router) {}
+  teacherId = localStorage.getItem('userid');
+  constructor(
+    private router: Router,
+    private dbb: AngularFireDatabase,
+    private homeService: HomeService,
+    public chatService: ChatService
+  ) {}
 
   ngOnInit(): void {
     this.app = initializeApp({
@@ -26,27 +44,30 @@ export class AppComponent {
       measurementId: 'G-41JEDDFQT2',
     });
     this.db = getDatabase(this.app);
-    // if (!!localStorage.getItem('namnamToken')) {
-    //   set(ref(this.db, `Auth/${localStorage.getItem('userid')}`), {
-    //     user_token: localStorage.getItem('namnamToken'),
-    //   });
-    // }
-    // const authRef = ref(this.db, 'Auth');
-    // onValue(authRef, (snapshot: any) => {
-    //   if (!!localStorage.getItem('namnamToken')) {
-    //     const data = snapshot.val();
-    //     for (let i in data) {
-    //       if (i == localStorage.getItem('userid')) this.savedToken = data[i];
-    //     }
-    //     if (
-    //       this.savedToken?.user_token != localStorage.getItem('namnamToken')
-    //     ) {
-    //       localStorage.removeItem('namnamToken');
-    //       localStorage.removeItem('userid');
-    //       localStorage.removeItem('username');
-    //       this.router.navigate(['/']);
-    //     }
-    //   }
-    // });
+    if (localStorage.getItem('userid')) {
+      this.listenForTeacherMessages();
+    }
+  }
+  listenForTeacherMessages() {
+    // 1- أول حاجة: تجيب المواد المشترك فيها المدرس من الـ backend
+    this.homeService
+      .getHomeStages()
+      .pipe(
+        map((res: any) => {
+          let data: any = [];
+          if (res?.data?.length) {
+            res?.data.forEach((element: any) => {
+              data.push(String(element?.material?.id));
+            });
+          }
+          return data;
+        })
+      )
+      .subscribe((materialIds) => {
+        this.chatService.listenForNewMessages(
+          materialIds,
+          localStorage.getItem('userid') || ''
+        );
+      });
   }
 }

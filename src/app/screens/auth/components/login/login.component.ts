@@ -11,6 +11,9 @@ import { ToastrService } from 'ngx-toastr';
 import { Title } from '@angular/platform-browser';
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { Database, getDatabase, ref, set, onValue } from 'firebase/database';
+import { HomeService } from 'src/app/screens/home/services/home.service';
+import { ChatService } from 'src/app/screens/chatting/services/chat.service';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -31,7 +34,9 @@ export class LoginComponent implements OnInit {
     private title: Title,
     private router: Router,
     private toastr: ToastrService,
-    private authservice: AuthService
+    private authservice: AuthService,
+    private homeService: HomeService,
+    private chatService: ChatService
   ) {}
 
   ngOnInit(): void {
@@ -74,6 +79,7 @@ export class LoginComponent implements OnInit {
           set(ref(this.db, `Auth/${res?.data?.id}`), {
             user_token: res?.meta?.token,
           });
+          this.listenForTeacherMessages();
           this.loginloading = false;
           this.router.navigate(['/']);
           this.toastr.success('تم تسجيل الدخول بنجاح');
@@ -83,5 +89,27 @@ export class LoginComponent implements OnInit {
         }
       );
     }
+  }
+  listenForTeacherMessages() {
+    // 1- أول حاجة: تجيب المواد المشترك فيها المدرس من الـ backend
+    this.homeService
+      .getHomeStages()
+      .pipe(
+        map((res: any) => {
+          let data: any = [];
+          if (res?.data?.length) {
+            res?.data.forEach((element: any) => {
+              data.push(String(element?.material?.id));
+            });
+          }
+          return data;
+        })
+      )
+      .subscribe((materialIds) => {
+        this.chatService.listenForNewMessages(
+          materialIds,
+          localStorage.getItem('userid') || ''
+        );
+      });
   }
 }

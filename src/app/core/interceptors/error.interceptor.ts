@@ -33,6 +33,7 @@ export class ErrorInterceptor implements HttpInterceptor {
           // localStorage.removeItem('userid');
           // localStorage.removeItem('username');
           localStorage.clear();
+          window.location.reload();
           // this.router.navigate(['/'])
         }
         return throwError(err);

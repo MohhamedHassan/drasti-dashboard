@@ -1,16 +1,21 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, LOCALE_ID } from '@angular/core';
+import localeAr from '@angular/common/locales/ar';
+import { registerLocaleData } from '@angular/common';
 import {
   ChatService,
   StudentChatItem,
 } from 'src/app/screens/chatting/services/chat.service';
 import { environment } from 'src/environments/environment';
 import { AllMsgsService } from '../../services/all-msgs.service';
-
+registerLocaleData(localeAr); // تسجيل اللغة
 @Component({
   selector: 'app-all-msgs',
   templateUrl: './all-msgs.component.html',
   styleUrls: ['./all-msgs.component.scss'],
+  providers: [
+    { provide: LOCALE_ID, useValue: 'ar' }, // تحديد اللغة الافتراضية
+  ],
 })
 export class AllMsgsComponent implements OnInit {
   studentsList: any[] = [];
@@ -24,7 +29,6 @@ export class AllMsgsComponent implements OnInit {
 
   ngOnInit(): void {
     this.http.getTeacherMaterials().subscribe((materials: any) => {
-      this.loading = false;
       this.materials = materials?.data;
       console.log(materials);
       let ids = this.materials.map((i) => i?.material?.id);
@@ -34,20 +38,9 @@ export class AllMsgsComponent implements OnInit {
         localStorage.getItem('userid') || '',
         (list) => {
           this.studentsList = list;
+          this.loading = false;
         }
       );
-      // this.materials.forEach((material) => {
-      //   this.chatService.listenToChatUsers(
-      //     material?.material?.id,
-      //     this.teacherId,
-      //     (students) => {
-      //       console.log(students);
-      //       this.studentsPerMaterial[material?.material?.id] = students;
-      //       this.noMsgs = true;
-      //       this.checkMsgsExist();
-      //     }
-      //   );
-      // });
     });
   }
   // checkUnread(list: any[]) {

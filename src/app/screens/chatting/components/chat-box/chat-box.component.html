@@ -14,8 +14,8 @@
             userid == message?.from_id ||
             message?.from_id == '_1' ||
             message.from_display_name
-              ? 'left'
-              : 'right'
+              ? 'right'
+              : 'left'
         }"
         *ngFor="let message of messages"
       >
@@ -25,7 +25,7 @@
             padding: 10px;
             display: inline-block;
             max-width: 80%;
-            word-break: break-all;
+            word-break: break-word;
           "
           [ngStyle]="{
             background:
@@ -54,8 +54,8 @@
               userid == message?.from_id ||
               message?.from_id == '_1' ||
               message.from_display_name
-                ? 'left'
-                : 'right'
+                ? 'right'
+                : 'left'
           }"
         >
           <img
@@ -75,13 +75,16 @@
               userid == message?.from_id ||
               message?.from_id == '_1' ||
               message.from_display_name
-                ? 'flex-end'
-                : 'flex-start'
+                ? 'flex-start'
+                : 'flex-end'
           }"
           style="display: flex"
           *ngIf="message?.type == 'audio'"
         >
           <audio
+            preload="metadata"
+            #audioPlayer
+            (play)="onAudioPlay(audioPlayer)"
             style="width: 90%"
             controls
             controlsList="nodownload noplaybackrate"
@@ -97,9 +100,9 @@
             !message.from_display_name
           "
           style="
-            justify-content: flex-start;
+            justify-content: flex-end;
             display: flex;
-            margin: 0;
+            margin: 3px 0 0 0;
             font-size: 10px;
             color: black;
             display: flex;
@@ -107,6 +110,34 @@
           "
         >
           من {{ message?.from }} -
+          <bdi
+            style="
+              justify-content: flex-end;
+              display: flex;
+              margin: 0;
+              font-size: 10px;
+              color: black;
+              font-weight: normal;
+            "
+            >{{ message?.date | date : "d MMMM, h:mm a" }}</bdi
+          >
+        </p>
+        <p
+          *ngIf="
+            userid == message?.from_id ||
+            message?.from_id == '_1' ||
+            message.from_display_name
+          "
+          style="
+            justify-content: flex-start;
+            display: flex;
+            margin: 3px 0 0 0;
+            font-size: 10px;
+            color: black;
+            display: flex;
+            gap: 10px;
+          "
+        >
           <bdi
             style="
               justify-content: flex-start;

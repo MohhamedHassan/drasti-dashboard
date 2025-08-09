@@ -23,6 +23,7 @@ import { ChatService } from '../../services/chat.service';
 import { HttpService } from '../../services/http.service';
 import localeAr from '@angular/common/locales/ar';
 import { registerLocaleData } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 
 registerLocaleData(localeAr); // تسجيل اللغة
 @Component({
@@ -34,6 +35,7 @@ registerLocaleData(localeAr); // تسجيل اللغة
   ],
 })
 export class ChatBoxComponent implements OnInit, OnChanges {
+  private currentAudio: HTMLAudioElement | null = null;
   imageLoading = false;
   currentImage = '';
   @ViewChild('boxchat2') boxchat!: ElementRef;
@@ -52,6 +54,7 @@ export class ChatBoxComponent implements OnInit, OnChanges {
   };
   @Output() closeChat = new EventEmitter<void>();
   constructor(
+    private toastr: ToastrService,
     private angularFireStore: AngularFireStorage,
     private datepipe: DatePipe,
     private afs: AngularFirestore,
@@ -71,6 +74,24 @@ export class ChatBoxComponent implements OnInit, OnChanges {
   }
   ngAfterViewInit(): void {}
   onImageChange(event: any) {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || input.files.length === 0) {
+      this.toastr.error('لم يتم اختيار أي ملف');
+      return;
+    }
+
+    const file = input.files[0];
+
+    if (!file.type.startsWith('image/')) {
+      this.toastr.error('الملف المحدد ليس صورة!');
+      return;
+    }
+    const maxSizeInBytes = 50 * 1024 * 1024;
+    if (file.size > maxSizeInBytes) {
+      this.toastr.error('حجم الصورة يجب ألا يتجاوز 50 ميجا');
+      return;
+    }
     const img: any = event?.target?.files[0];
     let reference = this.angularFireStore.ref(
       'message_images/' +
@@ -118,16 +139,20 @@ export class ChatBoxComponent implements OnInit, OnChanges {
       });
     });
   }
-  sendAudio(event: { audio: any; duration: any }) {
+  async sendAudio(event: { audio: any; duration: any }) {
     this.nowRecording = false;
     let reference = this.angularFireStore.ref(
       'message_images/' +
         `voice_message_${this.datepipe.transform(
           new Date(),
           'yyyy-MM-dd HH:mm:ss'
-        )}`
+        )}.wav`
     );
-    reference.put(event.audio).then(() => {
+    this.imageLoading = true;
+    this.scrollChatBox();
+    const wavBlob = await this.convertToWav(event.audio);
+
+    reference.put(wavBlob).then(() => {
       reference.getDownloadURL().subscribe((audioUrl) => {
         console.log(audioUrl);
         let date = new Date();
@@ -160,6 +185,7 @@ export class ChatBoxComponent implements OnInit, OnChanges {
               student_id: this.studentDetails.studentId,
             })
             .subscribe();
+          this.imageLoading = false;
         });
         this.scrollChatBox();
       });
@@ -186,6 +212,7 @@ export class ChatBoxComponent implements OnInit, OnChanges {
       let right: any = new Date(b.date);
       return left - right;
     });
+    console.log(this.messages);
     let user = this.messages.find(
       (item) =>
         item.from_id != localStorage.getItem('userid') &&
@@ -198,19 +225,13 @@ export class ChatBoxComponent implements OnInit, OnChanges {
       materialName: user.to,
       materialId: user.to_id,
     };
-    console.log(
-      this.messages.filter(
-        (item) =>
-          item.from_id != localStorage.getItem('userid') && item.from_id != '_1'
-      )
-    );
-    console.log(user);
   }
 
   sendMessage(input: any) {
     let inputValue = input.value;
     if (inputValue.toString().trim().length > 0) {
       let date = new Date();
+      console.log(this.studentDetails);
       set(
         ref(
           this.db,
@@ -263,5 +284,77 @@ export class ChatBoxComponent implements OnInit, OnChanges {
   @HostListener('document:keydown.escape', ['$event'])
   onEscape(event: KeyboardEvent) {
     this.currentImage = '';
+  }
+  onAudioPlay(player: HTMLAudioElement): void {
+    // لو فيه صوت شغال بالفعل، نوقفه
+    if (this.currentAudio && this.currentAudio !== player) {
+      this.currentAudio.pause();
+      this.currentAudio.currentTime = 0; // نرجعه للبداية
+    }
+
+    // نخزن الصوت الجديد كالحالي
+    this.currentAudio = player;
+  }
+  async convertToWav(blob: Blob): Promise<Blob> {
+    const audioCtx = new AudioContext();
+    const arrayBuffer = await blob.arrayBuffer();
+    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+    const wavBuffer = this.audioBufferToWav(audioBuffer);
+    return new Blob([wavBuffer], { type: 'audio/wav' });
+  }
+
+  // تحويل الـ AudioBuffer لـ wav
+  audioBufferToWav(buffer: AudioBuffer) {
+    const numOfChannels = buffer.numberOfChannels;
+    const length = buffer.length * numOfChannels * 2 + 44;
+    const result = new ArrayBuffer(length);
+    const view = new DataView(result);
+
+    const channels = [];
+    let sample;
+    let offset = 0;
+    let pos = 0;
+
+    // write WAV header
+    setUint32(0x46464952); // "RIFF"
+    setUint32(length - 8); // file length - 8
+    setUint32(0x45564157); // "WAVE"
+
+    setUint32(0x20746d66); // "fmt " chunk
+    setUint32(16); // length = 16
+    setUint16(1); // PCM (uncompressed)
+    setUint16(numOfChannels);
+    setUint32(buffer.sampleRate);
+    setUint32(buffer.sampleRate * 2 * numOfChannels); // avg. bytes/sec
+    setUint16(numOfChannels * 2); // block-align
+    setUint16(16); // 16-bit
+    setUint32(0x61746164); // "data" - chunk
+    setUint32(length - pos - 4); // chunk length
+
+    // write interleaved data
+    for (let i = 0; i < buffer.numberOfChannels; i++)
+      channels.push(buffer.getChannelData(i));
+
+    while (pos < length) {
+      for (let i = 0; i < numOfChannels; i++) {
+        sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+        sample = sample < 0 ? sample * 0x8000 : sample * 0x7fff; // scale
+        view.setInt16(pos, sample, true); // write 16-bit sample
+        pos += 2;
+      }
+      offset++;
+    }
+
+    return result;
+
+    function setUint16(data: any) {
+      view.setUint16(pos, data, true);
+      pos += 2;
+    }
+    function setUint32(data: any) {
+      view.setUint32(pos, data, true);
+      pos += 4;
+    }
   }
 }

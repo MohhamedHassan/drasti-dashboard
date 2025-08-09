@@ -23,6 +23,7 @@ export class AuthService {
       localStorage.clear();
       this.router.navigate(['/auth/login']);
       this.logoutloading = false;
+      window.location.reload();
     });
   }
 }

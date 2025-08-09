@@ -33,6 +33,7 @@ export class AudioMessageComponent {
   startRecording() {
     this.recordingStatus = 1;
     this.time = 0;
+    this.nowRecording.emit(true);
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
@@ -51,7 +52,7 @@ export class AudioMessageComponent {
             this.recordSeconds += 1;
           }
         }, 1000);
-        this.nowRecording.emit(true);
+
         this.mediaRecorder.ondataavailable = (event) => {
           this.audioChunks.push(event.data);
         };
@@ -72,6 +73,7 @@ export class AudioMessageComponent {
       .catch((error) => {
         //    console.error('Error accessing microphone: ', error)
         this.recordingStatus = 0;
+        this.nowRecording.emit(false);
         this.micError.emit(true);
       });
   }

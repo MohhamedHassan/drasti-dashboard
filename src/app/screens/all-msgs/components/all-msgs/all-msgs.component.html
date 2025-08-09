@@ -73,7 +73,8 @@
     لا توجد اسئلة
   </h4>
 </section>
-<app-loading *ngIf="loading"></app-loading> -->
+ -->
+<app-loading *ngIf="loading"></app-loading>
 <div class="container mt-4">
   <div class="row justify-content-center">
     <div class="col-lg-8">
@@ -95,15 +96,32 @@
         *ngFor="let student of studentsList"
         class="student-item"
       >
-        <div>
-          <h4 style="margin: 0">{{ student.materialName }}</h4>
-          <h6 style="margin: 5px 0">{{ student.userName }}</h6>
-          <p style="margin: 0; color: gray">
-            <small>{{ student.lastMessageDate }}</small>
-          </p>
+        <div style="display: flex; flex-wrap: wrap">
+          <img
+            style="width: 50px; height: 50px; object-fit: cover"
+            src="assets/logo.png"
+            alt=""
+          />
+          <div>
+            <h4 style="margin: 0">{{ student.materialName }}</h4>
+            <span style="display: block">{{ student.lastMessage }}</span>
+            <h6 style="margin: 5px 0">{{ student.userName }}</h6>
+            <p style="margin: 0; color: gray">
+              <small>{{
+                student.lastMessageDate | date : "d MMMM, h:mm a"
+              }}</small>
+            </p>
+          </div>
         </div>
         <span *ngIf="student.hasUnread" class="unread-dot"></span>
       </div>
     </div>
   </div>
+  <p
+    style="font-size: 20px"
+    *ngIf="!loading && !studentsList?.length"
+    class="text-center fw-bold text-secondary m-2"
+  >
+    لا توجد بيانات
+  </p>
 </div>

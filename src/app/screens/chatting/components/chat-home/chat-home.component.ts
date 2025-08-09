@@ -62,6 +62,7 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
         this.teacherId,
         (msgs) => {
           if (studentId == this.selectedStudentId) {
+            console.log('select');
             this.messages = msgs;
             this.chatService.markMessagesAsRead(
               this.materialId,

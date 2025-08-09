@@ -1,2 +1,44 @@
 <app-navbar></app-navbar>
 <router-outlet></router-outlet>
+<div
+  routerLink="/all-msgs"
+  *ngIf="chatService.showNotification"
+  style="
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 250px;
+    border: 2px solid #920f11;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: white;
+    cursor: pointer;
+  "
+  class="notification"
+>
+  <div
+    style="
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    "
+  >
+    <div>
+      <img
+        style="width: 50px; border-radius: 50%"
+        src="assets/logo.png"
+        alt="NAMNAM"
+      />
+    </div>
+    <div>
+      <p style="margin-bottom: 5px; text-align: center">
+        {{ chatService.notificationInfo?.from }}
+      </p>
+      <p style="margin: 0; text-align: center">
+        مادة {{ chatService.notificationInfo?.material_name }}
+      </p>
+    </div>
+  </div>
+</div>
