@@ -41,6 +41,12 @@ export class AllMsgsComponent implements OnInit {
           this.loading = false;
         }
       );
+      setTimeout(() => {
+        if (this.loading) {
+          this.studentsList = [];
+          this.loading = false;
+        }
+      }, 2000); // 2 ثانية مثلاً وبعدها يوقف اللودينج
     });
   }
   // checkUnread(list: any[]) {

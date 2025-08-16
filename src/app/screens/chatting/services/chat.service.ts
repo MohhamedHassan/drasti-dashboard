@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   getDatabase,
   ref,
@@ -20,7 +21,7 @@ export class ChatService {
   notificationInfo: any = null;
   private db = getDatabase();
   private messageRef: DatabaseReference | null = null;
-  constructor(private toastr: ToastrService) {}
+  constructor(private toastr: ToastrService, private router: Router) {}
   listenToChatUsers(
     materialId: string,
     teacherId: string,
@@ -269,12 +270,21 @@ export class ChatService {
               msg.from_id !== '_1' &&
               !msg.from_display_name
             ) {
-              this.showNotification = true;
+              // this.showNotification = true;
               this.notificationInfo = msg;
-              setTimeout(() => {
-                this.showNotification = false;
-                this.notificationInfo = null;
-              }, 5000);
+              // setTimeout(() => {
+              //   this.showNotification = false;
+              //   this.notificationInfo = null;
+              // }, 5000);
+              console.log(this.notificationInfo);
+              const toast = this.toastr.info(
+                this.notificationInfo?.from,
+                this.notificationInfo?.material_name
+              );
+              toast.onTap.subscribe(() => {
+                // توجيه المستخدم عند الكليك
+                this.router.navigate(['/all-msgs']);
+              });
             }
           }
         });

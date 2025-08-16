@@ -12,6 +12,7 @@ import {
   SimpleChanges,
   ViewChild,
   LOCALE_ID,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { Database, getDatabase, ref, set, onValue } from 'firebase/database';
@@ -59,7 +60,8 @@ export class ChatBoxComponent implements OnInit, OnChanges {
     private datepipe: DatePipe,
     private afs: AngularFirestore,
     private title: Title,
-    private http: HttpService
+    private http: HttpService,
+    private cd: ChangeDetectorRef
   ) {}
   ngOnChanges(changes: SimpleChanges): void {
     this.scrollChatBox();
@@ -133,11 +135,17 @@ export class ChatBoxComponent implements OnInit, OnChanges {
               student_id: this.studentDetails.studentId,
             })
             .subscribe();
+          console.log('cancel');
           this.imageLoading = false;
+          this.scrollChatBox();
         });
         this.scrollChatBox();
       });
     });
+  }
+  loading() {
+    this.imageLoading = true;
+    this.cd.detectChanges();
   }
   async sendAudio(event: { audio: any; duration: any }) {
     this.nowRecording = false;
@@ -185,6 +193,7 @@ export class ChatBoxComponent implements OnInit, OnChanges {
               student_id: this.studentDetails.studentId,
             })
             .subscribe();
+          console.log('cancel');
           this.imageLoading = false;
         });
         this.scrollChatBox();

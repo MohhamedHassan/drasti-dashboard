@@ -8,50 +8,52 @@
         <h3 *ngIf="students?.length" style="padding: 16px">الطلاب</h3>
         <h5 class="text-center" *ngIf="loading">جار التحميل....</h5>
         <ul *ngIf="students?.length">
-          <li
-            style="
-              border-bottom: 1px solid #d8cfcf;
-              padding: 16px;
-              cursor: pointer;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              font-weight: bold;
-            "
-            class="mb-2 chat-list-item"
-            *ngFor="let student of students"
-            (click)="selectStudent(student.userId, student.name)"
-            [style.color]="
-              student.userId === selectedStudentId ? '#920f11' : 'black'
-            "
-          >
-            <div style="display: flex; gap: 10px; align-items: center">
-              <img
-                style="width: 50px; height: 50px; object-fit: cover"
-                src="assets/logo.png"
-                alt=""
-              />
-              <div>
-                <p style="margin: 0">{{ materialName }}</p>
-                <div style="display: flex; gap: 5px">
-                  <span> {{ student.name }}</span> -
-                  <span>{{ student.phone }}</span>
+          <ng-container *ngFor="let student of students">
+            <li
+              style="
+                border-bottom: 1px solid #d8cfcf;
+                padding: 16px;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-weight: bold;
+              "
+              *ngIf="student.phone"
+              class="mb-2 chat-list-item"
+              (click)="selectStudent(student.userId, student.name)"
+              [style.color]="
+                student.userId === selectedStudentId ? '#920f11' : 'black'
+              "
+            >
+              <div style="display: flex; gap: 10px; align-items: center">
+                <img
+                  style="width: 50px; height: 50px; object-fit: cover"
+                  src="assets/logo.png"
+                  alt=""
+                />
+                <div>
+                  <p style="margin: 0">{{ materialName }}</p>
+                  <div style="display: flex; gap: 5px">
+                    <span> {{ student.name }}</span> -
+                    <span>{{ student.phone }}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <span
-              *ngIf="student.hasUnread && selectedStudentId != student.userId"
-              style="
-                display: block;
-                width: 10px;
-                height: 10px;
-                border-radius: 50%;
-                background-color: #920f11;
-              "
-              title="رسائل غير مقروءة"
-            >
-            </span>
-          </li>
+              <span
+                *ngIf="student.hasUnread && selectedStudentId != student.userId"
+                style="
+                  display: block;
+                  width: 10px;
+                  height: 10px;
+                  border-radius: 50%;
+                  background-color: #920f11;
+                "
+                title="رسائل غير مقروءة"
+              >
+              </span>
+            </li>
+          </ng-container>
         </ul>
         <h3 class="text-center" *ngIf="!students?.length && !loading">
           لا يوجد اسئلة
