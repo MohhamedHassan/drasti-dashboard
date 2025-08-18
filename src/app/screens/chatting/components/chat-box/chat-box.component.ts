@@ -19,7 +19,7 @@ import { Database, getDatabase, ref, set, onValue } from 'firebase/database';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { DatePipe } from '@angular/common';
-import { Title } from '@angular/platform-browser';
+import { DomSanitizer, Title } from '@angular/platform-browser';
 import { ChatService } from '../../services/chat.service';
 import { HttpService } from '../../services/http.service';
 import localeAr from '@angular/common/locales/ar';
@@ -54,7 +54,9 @@ export class ChatBoxComponent implements OnInit, OnChanges {
     materialId: string;
   };
   @Output() closeChat = new EventEmitter<void>();
+  localMsgs: any = [];
   constructor(
+    private sanitizer: DomSanitizer,
     private toastr: ToastrService,
     private angularFireStore: AngularFireStorage,
     private datepipe: DatePipe,
@@ -64,7 +66,18 @@ export class ChatBoxComponent implements OnInit, OnChanges {
     private cd: ChangeDetectorRef
   ) {}
   ngOnChanges(changes: SimpleChanges): void {
+    this.messages = [...this.messages, ...this.localMsgs];
+    this.messages = this.messages.sort(function (a: any, b: any) {
+      let left: any = new Date(a.date);
+      let right: any = new Date(b.date);
+      return left - right;
+    });
+    console.log(this.messages);
+    this.cd.detectChanges();
     this.scrollChatBox();
+  }
+  getSafeUrl(url: string): any {
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
   scrollChatBox() {
     setTimeout(() => {
@@ -144,11 +157,39 @@ export class ChatBoxComponent implements OnInit, OnChanges {
     });
   }
   loading() {
-    this.imageLoading = true;
-    this.cd.detectChanges();
+    // this.imageLoading = true;
+    // this.cd.detectChanges();
   }
   async sendAudio(event: { audio: any; duration: any }) {
     this.nowRecording = false;
+    let date = new Date();
+    const tempId = 'local-' + Date.now();
+    const localUrl = URL.createObjectURL(event.audio); // Local preview
+    this.localMsgs.push({
+      date: this.datepipe.transform(date, 'yyyy-MM-dd HH:mm:ss'),
+      id: tempId,
+      message_content: localUrl,
+      duration: event.duration,
+      isUploading: true,
+      did_read: false,
+      from: localStorage.getItem('username'),
+      from_display_name: localStorage.getItem('name_in_web'),
+      from_number: localStorage.getItem('userphone'),
+      from_id: localStorage.getItem('userid'),
+      material_name: this.studentDetails?.materialName,
+      to: this.studentDetails?.studentName,
+      to_id: `${this.studentDetails?.studentId}`,
+      type: 'audio',
+    });
+    this.messages = [...this.messages, ...this.localMsgs];
+    this.messages = this.messages.sort(function (a: any, b: any) {
+      let left: any = new Date(a.date);
+      let right: any = new Date(b.date);
+      return left - right;
+    });
+    this.scrollChatBox();
+    this.cd.detectChanges();
+    this.scrollChatBox();
     let reference = this.angularFireStore.ref(
       'message_images/' +
         `voice_message_${this.datepipe.transform(
@@ -156,14 +197,13 @@ export class ChatBoxComponent implements OnInit, OnChanges {
           'yyyy-MM-dd HH:mm:ss'
         )}.wav`
     );
-    this.imageLoading = true;
+    // this.imageLoading = true;
     this.scrollChatBox();
     const wavBlob = await this.convertToWav(event.audio);
 
     reference.put(wavBlob).then(() => {
       reference.getDownloadURL().subscribe((audioUrl) => {
         console.log(audioUrl);
-        let date = new Date();
         set(
           ref(
             this.db,
@@ -193,7 +233,9 @@ export class ChatBoxComponent implements OnInit, OnChanges {
               student_id: this.studentDetails.studentId,
             })
             .subscribe();
-          console.log('cancel');
+          console.log(tempId);
+          this.messages = this.messages.filter((m) => m.id !== tempId);
+          this.localMsgs = this.localMsgs.filter((m: any) => m.id !== tempId);
           this.imageLoading = false;
         });
         this.scrollChatBox();

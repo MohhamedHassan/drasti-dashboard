@@ -78,9 +78,10 @@
                 ? 'flex-start'
                 : 'flex-end'
           }"
-          style="display: flex"
+          style="display: flex; align-items: center; gap: 8px"
           *ngIf="message?.type == 'audio'"
         >
+          <i *ngIf="message?.isUploading" class="fa-regular fa-clock"></i>
           <audio
             preload="metadata"
             #audioPlayer
@@ -89,7 +90,7 @@
             controls
             controlsList="nodownload noplaybackrate"
           >
-            <source [src]="message?.message_content" type="audio/mpeg" />
+            <source [src]="getSafeUrl(message?.message_content)" />
             Your browser does not support the audio element.
           </audio>
         </div>
