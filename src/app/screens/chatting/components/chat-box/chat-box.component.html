@@ -17,7 +17,7 @@
               ? 'right'
               : 'left'
         }"
-        *ngFor="let message of messages"
+        *ngFor="let message of messages; let msgIndex = index"
       >
         <span
           style="
@@ -82,11 +82,15 @@
           *ngIf="message?.type == 'audio'"
         >
           <i *ngIf="message?.isUploading" class="fa-regular fa-clock"></i>
+          <i #loader class="rotate-icon fa-solid fa-spinner"></i>
           <audio
             preload="metadata"
             #audioPlayer
             (play)="onAudioPlay(audioPlayer)"
-            style="width: 90%"
+            (canplaythrough)="
+              loader.style.display = 'none'; audioPlayer.style.display = 'block'
+            "
+            style="width: 90%; display: none"
             controls
             controlsList="nodownload noplaybackrate"
           >
@@ -131,6 +135,7 @@
           "
           style="
             justify-content: flex-start;
+            align-items: center;
             display: flex;
             margin: 3px 0 0 0;
             font-size: 10px;
@@ -139,6 +144,11 @@
             gap: 10px;
           "
         >
+          <i
+            (click)="selectedMsgToDelete = message"
+            style="color: red; cursor: pointer; font-size: 16px"
+            class="fa-solid fa-trash"
+          ></i>
           <bdi
             style="
               justify-content: flex-start;
@@ -148,8 +158,8 @@
               color: black;
               font-weight: normal;
             "
-            >{{ message?.date | date : "d MMMM, h:mm a" }}</bdi
-          >
+            >{{ message?.date | date : "d MMMM, h:mm a" }}
+          </bdi>
         </p>
       </li>
       <li *ngIf="imageLoading">
@@ -292,5 +302,44 @@
       [src]="currentImage"
       alt=""
     />
+  </div>
+</div>
+<div
+  *ngIf="selectedMsgToDelete"
+  style="
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  "
+  class="delete-popup"
+>
+  <div
+    style="
+      padding: 2rem;
+      text-align: center;
+      background-color: white;
+      border-radius: 10px;
+    "
+  >
+    <p>تأكيد حذف الرسالة ؟</p>
+    <div style="display: flex; justify-content: end; gap: 10px">
+      <button
+        [disabled]="deleteMsgLoading"
+        (click)="deleteMessage(selectedMsgToDelete)"
+        class="btn btn-danger"
+      >
+        <i *ngIf="deleteMsgLoading" class="rotate-icon fa-solid fa-spinner"></i>
+        حذف
+      </button>
+      <button (click)="selectedMsgToDelete = ''" class="btn btn-dark">
+        الغاء
+      </button>
+    </div>
   </div>
 </div>

@@ -15,7 +15,15 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { Database, getDatabase, ref, set, onValue } from 'firebase/database';
+import {
+  Database,
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  remove,
+} from 'firebase/database';
+
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { DatePipe } from '@angular/common';
@@ -38,6 +46,7 @@ registerLocaleData(localeAr); // تسجيل اللغة
 export class ChatBoxComponent implements OnInit, OnChanges {
   private currentAudio: HTMLAudioElement | null = null;
   imageLoading = false;
+  selectedMsgToDelete = '';
   currentImage = '';
   @ViewChild('boxchat2') boxchat!: ElementRef;
   micrphonAlert = false;
@@ -407,5 +416,34 @@ export class ChatBoxComponent implements OnInit, OnChanges {
       view.setUint32(pos, data, true);
       pos += 4;
     }
+  }
+  deleteMsgLoading = false;
+  deleteMessage(msg: any) {
+    if (
+      !this.studentDetails.materialId ||
+      !this.studentDetails.studentId ||
+      !msg.key
+    ) {
+      console.log('s');
+      return;
+    }
+    this.deleteMsgLoading = true;
+    const messageRef = ref(
+      this.db,
+      `Subjects-Messages/${this.studentDetails.materialId}/${this.studentDetails.studentId}/${msg.key}`
+    );
+
+    remove(messageRef)
+      .then(() => {
+        // let msgIndex = this.messages.findIndex((i) => i.key == msg.key);
+        // this.messages.splice(msgIndex, 1);
+        console.log('Message deleted successfully');
+        this.selectedMsgToDelete = '';
+        this.deleteMsgLoading = false;
+      })
+      .catch((error) => {
+        this.deleteMsgLoading = false;
+        console.error('Error deleting message:', error);
+      });
   }
 }

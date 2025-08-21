@@ -10,6 +10,7 @@ import {
   DatabaseReference,
   off,
   onChildChanged,
+  onChildRemoved,
 } from 'firebase/database';
 import { ToastrService } from 'ngx-toastr';
 
@@ -91,7 +92,7 @@ export class ChatService {
 
     const path = `Subjects-Messages/${materialId}/${studentId}`;
     this.messageRef = ref(this.db, path);
-    const messages: any[] = [];
+    let messages: any[] = [];
 
     onChildAdded(this.messageRef, (snapshot: any) => {
       const msg = snapshot.val();
@@ -106,12 +107,21 @@ export class ChatService {
         console.log(path);
         update(ref(this.db, `${path}/${key}`), { did_read: true });
       }
-
+      console.log(msg, key);
       messages.push({ ...msg, key });
       const sorted = [...messages].sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       );
       callback([...sorted]);
+    });
+    onChildRemoved(this.messageRef, (snapshot: any) => {
+      const removedKey = snapshot.key;
+      messages = messages.filter((msg) => msg.key !== removedKey);
+
+      const sorted = [...messages].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+      callback(sorted);
     });
   }
 
@@ -158,14 +168,11 @@ export class ChatService {
         );
 
         onChildAdded(userMessagesRef, (msgSnapshot) => {
-          console.log('ui');
           const msg = msgSnapshot.val();
-
-          if (
-            msg.to_id == materialId ||
-            msg.from_id == localStorage.getItem('userid')
-          ) {
-            const hasUnread = !msg.did_read && msg.from_id !== teacherId;
+          console.log(msg);
+          if (true) {
+            const hasUnread =
+              !msg.did_read && !msg.from_display_name && msg.from_id != '_1';
 
             const existingIndex = studentsList.findIndex(
               (s) => s.userId === userId && s.materialId === materialId
@@ -189,10 +196,9 @@ export class ChatService {
               }
 
               // لو في رسالة غير مقروءة بنحدث العلامة
-              studentsList[existingIndex].hasUnread =
-                studentsList[existingIndex].hasUnread || hasUnread;
+              studentsList[existingIndex].hasUnread = hasUnread;
             } else {
-              if (msg.from_id != localStorage.getItem('userid')) {
+              if (!msg.from_display_name && msg.from_id != '_1') {
                 studentsList.push({
                   materialId,
                   materialName: msg.material_name,
@@ -242,9 +248,43 @@ export class ChatService {
           });
           callback([...studentsList]);
         });
+        onChildRemoved(userMessagesRef, (snapshot) => {
+          const removedKey = snapshot.key;
+
+          // هنحتاج نجيب آخر رسالة تانية من Firebase
+          get(userMessagesRef).then((snap) => {
+            if (snap.exists()) {
+              const msgs = Object.values(snap.val()) as any[];
+              msgs.sort(
+                (a, b) =>
+                  new Date(b.date).getTime() - new Date(a.date).getTime()
+              );
+              const lastMsg = msgs[0];
+
+              studentsList = studentsList.map((item) => {
+                if (item.materialId === materialId && item.userId === userId) {
+                  return {
+                    ...item,
+                    lastMessage:
+                      lastMsg?.type == 'audio'
+                        ? 'رسالة صوتية'
+                        : lastMsg?.type == 'photo'
+                        ? 'صورة'
+                        : lastMsg?.message_content || '',
+                    lastMessageDate: lastMsg?.date || '',
+                  };
+                }
+                return item;
+              });
+            }
+
+            callback([...studentsList]);
+          });
+        });
       });
     });
   }
+
   listenForNewMessages(materialIds: string[], teacherId: string) {
     const loginTime = new Date(); // 🟢 وقت اللوجن
 
