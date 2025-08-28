@@ -76,9 +76,9 @@ export class LoginComponent implements OnInit {
             `${res?.data?.fname} ${res?.data?.lname}`
           );
           localStorage.setItem('name_in_web', `${res?.data?.name_in_web} `);
-          set(ref(this.db, `Auth/${res?.data?.id}`), {
-            user_token: res?.meta?.token,
-          });
+          // set(ref(this.db, `Auth/${res?.data?.id}`), {
+          //   user_token: res?.meta?.token,
+          // });
           this.listenForTeacherMessages();
           this.loginloading = false;
           this.router.navigate(['/']);
